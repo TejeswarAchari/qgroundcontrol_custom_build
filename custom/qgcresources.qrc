@@ -59,6 +59,9 @@
 		<file alias="GripperRelease.svg">../resources/GripperRelease.svg</file>
 		<file alias="GripperGrab.svg">../resources/GripperGrab.svg</file>
 		<file>../resources/icons/qgroundcontrol.ico</file>
+		
+
+
 	</qresource>
 	<qresource prefix="/res/firmware">
 		<file alias="3drradio.png">../resources/firmware/3drradio.png</file>
@@ -108,4 +111,10 @@
 	<qresource prefix="/opengl">
 		<file>../resources/opengl/buglist.json</file>
 	</qresource>
+	<qresource prefix="/gimbal">
+		<file alias="payload.svg">../resources/gimbal/payload.svg</file>
+	</qresource>
+	 <qresource prefix="custom/img">
+        <file alias="indrones_dashboard_image.png">res/Images/indrones_dashboard_image.png</file>
+    </qresource>	
 </RCC>

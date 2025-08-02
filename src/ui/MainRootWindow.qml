@@ -147,6 +147,12 @@ ApplicationWindow {
         planView.visible = true
     }
 
+    function showDashboardView() {
+        showTool(qsTr("Dashboard"), "qrc:/custom/CustomDashboard.qml", "/qmlimages/Analyze.svg")
+    }
+
+
+
     function showTool(toolTitle, toolSource, toolIcon) {
         toolDrawer.backIcon     = flightView.visible ? "/qmlimages/PaperPlane.svg" : "/qmlimages/Plan.svg"
         toolDrawer.toolTitle    = toolTitle
@@ -297,6 +303,23 @@ ApplicationWindow {
                     Layout.margins: toolSelectDialog._margins
                     spacing:        ScreenTools.defaultFontPixelWidth
 
+
+                    SubMenuButton {
+                        id: dashboardButton
+                        height: toolSelectDialog._toolButtonHeight
+                        Layout.fillWidth: true
+                        text: qsTr("Dashboard")
+                        imageResource: "/qmlimages/Analyze.svg" // You can use your own icon
+                        imageColor: qgcPal.text
+                        onClicked: {
+                            if (!mainWindow.preventViewSwitch()) {
+                                toolSelectDialog.close()
+                                mainWindow.showDashboardView()
+                            }
+                        }
+                    }
+
+
                     SubMenuButton {
                         id:                 setupButton
                         height:             toolSelectDialog._toolButtonHeight
@@ -327,6 +350,8 @@ ApplicationWindow {
                             }
                         }
                     }
+
+
 
                     SubMenuButton {
                         id:                 settingsButton
@@ -435,6 +460,13 @@ ApplicationWindow {
         id:             planView
         anchors.fill:   parent
         visible:        false
+    }
+
+    Loader {
+        id: dashboardLoader
+        anchors.fill: parent
+        visible: false
+
     }
 
     Drawer {
