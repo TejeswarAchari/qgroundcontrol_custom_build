@@ -22,9 +22,14 @@
 #include "SettingsManager.h"
 #include "AppMessages.h"
 #include "QmlComponentInfo.h"
+
 #include "QGCPalette.h"
 
-
+#include <QQuickWindow>
+#include <QQuickItem>
+#include <QQuickView>
+#include <QTimer>
+#include <QQmlContext>
 
 QGC_LOGGING_CATEGORY(CustomLog, "CustomLog")
 
@@ -350,10 +355,43 @@ void CustomPlugin::paletteOverride(QString colorName, QGCPalette::PaletteColorIn
 // We override this so we can get access to QQmlApplicationEngine and use it to register our qml module
 QQmlApplicationEngine* CustomPlugin::createQmlApplicationEngine(QObject* parent)
 {
+    // Step 1: Create QGC engine and load main UI, but hide it initially
     QQmlApplicationEngine* qmlEngine = QGCCorePlugin::createQmlApplicationEngine(parent);
     qmlEngine->addImportPath("qrc:/Custom/Widgets");
+
+    if (!qmlEngine->rootObjects().isEmpty()) {
+        QWindow* mainWindow = qobject_cast<QWindow*>(qmlEngine->rootObjects().first());
+        if (mainWindow) {
+            mainWindow->hide(); // Hide main QGC window initially
+        }
+    }
+
+    // Step 2: Show splash screen
+    QQuickView* splashView = new QQuickView();
+    splashView->setSource(QUrl(QStringLiteral("qrc:/custom/qml/SplashScreen.qml")));
+    splashView->setColor(Qt::black);
+    splashView->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+    splashView->setResizeMode(QQuickView::SizeRootObjectToView);
+    splashView->setWidth(500);  // Set splash size
+    splashView->setHeight(300);
+    splashView->show();
+
+    // Step 3: After 3 seconds, hide splash and show QGC window
+    QTimer::singleShot(3000, [splashView, qmlEngine]() {
+        splashView->close();
+        splashView->deleteLater();
+
+        if (!qmlEngine->rootObjects().isEmpty()) {
+            QWindow* mainWindow = qobject_cast<QWindow*>(qmlEngine->rootObjects().first());
+            if (mainWindow) {
+                mainWindow->show(); // Now show QGC window
+            }
+        }
+    });
+
     return qmlEngine;
 }
+
 // This function allows adjusting FactMetaData for custom settings if needed
 bool CustomPlugin::adjustSettingMetaData(const QString& settingsGroup, FactMetaData& metaData)
 {

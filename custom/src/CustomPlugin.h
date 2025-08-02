@@ -64,6 +64,8 @@ public:
     bool                    adjustSettingMetaData           (const QString& settingsGroup, FactMetaData& metaData) final;
     void                    paletteOverride                 (QString colorName, QGCPalette::PaletteColorInfo_t& colorInfo) final;
     QQmlApplicationEngine*  createQmlApplicationEngine      (QObject* parent) final;
+    virtual bool                    overrideQmlLoad                (void) const final { return true; } //added by me
+
 
     // Overrides from QGCTool
     void                    setToolbox                      (QGCToolbox* toolbox);

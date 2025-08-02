@@ -36,6 +36,12 @@
     <qresource prefix="/custom">
         <file alias="CustomDashboard.qml">src/CustomDashboard.qml</file>
     </qresource>
+   <qresource prefix="/custom/img">
+        <file alias="custom_splash.png">res/Images/custom_splash.png</file>
+    </qresource>
+    <qresource prefix="/custom/qml">
+        <file>SplashScreen.qml</file>
+    </qresource>
 </RCC>
 
 

@@ -2,6 +2,7 @@ import QtQuick 2.12
 import QtQuick.Controls 2.4
 import QtQuick.Layouts 1.11
 import QGroundControl 1.0
+import QGroundControl.FactSystem 1.0
 
 Item {
     anchors.fill: parent
@@ -79,19 +80,18 @@ Item {
                 Layout.fillWidth: true
                 Layout.leftMargin: 100
 
-                function safeText(condition, textIfTrue, fallback) {
-                    return condition ? textIfTrue : fallback;
-                }
-
                 // GPS
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "GPS"; color: "#FFD700"; font.bold: true }
+
                         Text {
-                            text: activeVehicle && activeVehicle.gps.fixType && activeVehicle.gps.count
-                                  ? "Fix: " + activeVehicle.gps.fixType.value + ", Sats: " + activeVehicle.gps.count.value
-                                  : "N/A"
+                            text: activeVehicle
+                                ? ("Fix: " + (activeVehicle.getFact("gps", "fixType").valueString || "Unknown") +
+                                   ", Sats: " + activeVehicle.getFact("gps", "count").value)
+                                : "N/A"
                             color: "white"
                         }
                     }
@@ -100,13 +100,16 @@ Item {
                 // Battery
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "Battery"; color: "#FFD700"; font.bold: true }
+
                         Text {
-                            text: activeVehicle && activeVehicle.battery.voltage && activeVehicle.battery.percentRemaining
-                                  && !isNaN(activeVehicle.battery.voltage.value)
-                                  ? activeVehicle.battery.voltage.value.toFixed(1) + "V | " + activeVehicle.battery.percentRemaining.value + "%"
-                                  : "N/A"
+                            text: activeVehicle
+                                ? (isNaN(activeVehicle.getFact("power", "batteryVoltage").value) ? "N/A" :
+                                   activeVehicle.getFact("power", "batteryVoltage").value.toFixed(1) + " V | " +
+                                   activeVehicle.getFact("power", "batteryPercentRemaining").value.toFixed(0) + "%")
+                                : "N/A"
                             color: "white"
                         }
                     }
@@ -115,10 +118,11 @@ Item {
                 // Altitude
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "Altitude"; color: "#FFD700"; font.bold: true }
                         Text {
-                            text: activeVehicle && activeVehicle.altitudeRelative
+                            text: activeVehicle && activeVehicle.altitudeRelative && !isNaN(activeVehicle.altitudeRelative.value)
                                   ? activeVehicle.altitudeRelative.value.toFixed(1) + " m" : "N/A"
                             color: "white"
                         }
@@ -128,10 +132,11 @@ Item {
                 // Ground Speed
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "Ground Speed"; color: "#FFD700"; font.bold: true }
                         Text {
-                            text: activeVehicle && activeVehicle.groundSpeed
+                            text: activeVehicle && activeVehicle.groundSpeed && !isNaN(activeVehicle.groundSpeed.value)
                                   ? activeVehicle.groundSpeed.value.toFixed(1) + " m/s" : "N/A"
                             color: "white"
                         }
@@ -141,10 +146,11 @@ Item {
                 // Heading
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "Heading"; color: "#FFD700"; font.bold: true }
                         Text {
-                            text: activeVehicle && activeVehicle.heading
+                            text: activeVehicle && activeVehicle.heading && !isNaN(activeVehicle.heading.value)
                                   ? activeVehicle.heading.value.toFixed(0) + "°" : "N/A"
                             color: "white"
                         }
@@ -154,10 +160,11 @@ Item {
                 // RC Signal
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "RC Signal"; color: "#FFD700"; font.bold: true }
                         Text {
-                            text: activeVehicle && activeVehicle.rcRSSI && activeVehicle.rcRSSI.value !== undefined
+                            text: activeVehicle && activeVehicle.rcRSSI && !isNaN(activeVehicle.rcRSSI.value)
                                   ? activeVehicle.rcRSSI.value + "%" : "No RC Data"
                             color: "white"
                         }
@@ -167,11 +174,15 @@ Item {
                 // Telemetry
                 Rectangle {
                     width: 300; height: 90; radius: 10; color: "#2b2f3a"
-                    Column { anchors.centerIn: parent
+                    Column {
+                        anchors.centerIn: parent
                         Text { text: "Telemetry"; color: "#FFD700"; font.bold: true }
+
                         Text {
-                            text: activeVehicle && activeVehicle.telemetryRXErrors
-                                  ? "Errors: " + activeVehicle.telemetryRXErrors.value : "No Telemetry Data"
+                            text: activeVehicle
+                                ? ("RX Errors: " + activeVehicle.getFact("telemetry", "rxErrors").value +
+                                   " | Loss: " + activeVehicle.getFact("telemetry", "rxLossPercent").value.toFixed(1) + "%")
+                                : "No Telemetry Data"
                             color: "white"
                         }
                     }
@@ -185,11 +196,12 @@ Item {
                 height: 60
                 radius: 8
                 color: "#15171c"
+
                 Text {
                     anchors.centerIn: parent
-                    text: activeVehicle && activeVehicle.message && activeVehicle.message.count > 0
-                          ? "Warning: " + activeVehicle.message.get(0).text
-                          : "No Active Warnings"
+                    text: QGroundControl.messageModel.count > 0
+                        ? "Warning: " + QGroundControl.messageModel.get(0).text
+                        : "No Active Warnings"
                     font.pixelSize: 18
                     color: "#FFD700"
                 }
