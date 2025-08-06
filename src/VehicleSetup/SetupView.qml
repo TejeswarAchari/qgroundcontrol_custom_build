@@ -243,8 +243,23 @@ Rectangle {
                 text:               qsTr("Firmware")
                 Layout.fillWidth:   true
 
+
+
                 onClicked: showPanel(this, "FirmwareUpgrade.qml")
             }
+
+            // SubMenuButton {
+            //     id:                 firmwareButton
+            //     imageResource:      "/qmlimages/FirmwareUpgradeIcon.png"
+            //     setupIndicator:     false
+            //     exclusiveGroup:     setupButtonGroup
+            //     text:               qsTr("Firmware")
+            //     Layout.fillWidth:   true
+
+            //     // visible: !ScreenTools.isMobile && _corePlugin.options.showFirmwareUpgrade && UserSession.role() === "Engineer"
+            //     onClicked: showPanel(this, "FirmwareUpgrade.qml")
+            // }
+
 
             SubMenuButton {
                 id:                 px4FlowButton

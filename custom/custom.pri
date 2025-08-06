@@ -1,3 +1,4 @@
+
 message("Adding Custom Plugin")
 
 #-- Version control
@@ -67,10 +68,13 @@ QML_IMPORT_PATH += \
 
 # Our own, custom sources
 SOURCES += \
+    $$PWD/src/AuthManager.cpp \
     $$PWD/src/CustomPlugin.cc \
 
 HEADERS += \
+    $$PWD/src/AuthManager.h \
     $$PWD/src/CustomPlugin.h \
+
 
 INCLUDEPATH += \
     $$PWD/src \
@@ -91,6 +95,4 @@ INCLUDEPATH += \
 #     $$PWD/src/AutoPilotPlugin/CustomAutoPilotPlugin.cc \
 #     $$PWD/src/FirmwarePlugin/CustomFirmwarePlugin.cc \
 #     $$PWD/src/FirmwarePlugin/CustomFirmwarePluginFactory.cc \
-
-
 

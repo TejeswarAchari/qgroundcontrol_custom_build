@@ -462,6 +462,7 @@ ApplicationWindow {
         visible:        false
     }
 
+
     Loader {
         id: dashboardLoader
         anchors.fill: parent
@@ -755,4 +756,11 @@ ApplicationWindow {
             }
         }
     }
+    Loader {
+           id: loginOverlay
+           anchors.fill: parent
+           visible: true
+           source: "qrc:/custom/qml/LoginView.qml"
+           z: 9999
+       }
 }

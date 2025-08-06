@@ -89,6 +89,30 @@ Rectangle {
             onClicked:          _activeVehicle.closeVehicle()
             visible:            _activeVehicle && _communicationLost && currentToolbar === flyViewToolbar
         }
+        // Show Logged-in Role
+        QGCLabel {
+            id: roleLabel
+            text: "Role: " + UserSession.role()
+            color: "white"
+            font.pixelSize: ScreenTools.mediumFontPointSize
+            visible: UserSession.role() !== ""
+            anchors.verticalCenter: parent.verticalCenter
+            leftPadding: ScreenTools.defaultFontPixelWidth
+        }
+
+        // // Logout Button
+        // QGCButton {
+        //     id: logoutButton
+        //     text: qsTr("Logout")
+        //     visible: UserSession.role() !== ""
+        //     onClicked: {
+        //           // Call AuthManager logout to return to login screen
+        //           if (authManager) {
+        //               authManager.logout()
+        //           }
+        //       }
+        // }
+
     }
 
     QGCFlickable {
@@ -110,6 +134,65 @@ Rectangle {
             source:             currentToolbar === flyViewToolbar ?
                                     "qrc:/toolbar/MainToolBarIndicators.qml" :
                                     (currentToolbar == planViewToolbar ? "qrc:/qml/PlanToolBarIndicators.qml" : "")
+        }
+    }
+
+    // Logout Button - Right side with Indrones theme (Reversed hover colors)
+    QGCButton {
+        id: logoutButton
+        text: qsTr(" Logout ")
+        visible: UserSession.role() !== ""
+        anchors.right: parent.right
+        anchors.rightMargin: ScreenTools.defaultFontPixelWidth
+        anchors.verticalCenter: parent.verticalCenter
+        height: parent.height * 0.7
+        width: ScreenTools.defaultFontPixelWidth * 12
+
+        // Custom Indrones-themed styling with reversed colors
+        background: Rectangle {
+            color: logoutButton.pressed ? "#E6C200" : (logoutButton.hovered ? "#666666" : "#FFD700")
+            border.color: logoutButton.hovered ? "#999999" : "#E6C200"
+            border.width: 1
+            radius: 6
+
+            // Subtle gradient effect with reversed colors
+            gradient: Gradient {
+                GradientStop {
+                    position: 0.0;
+                    color: logoutButton.pressed ? "#E6C200" : (logoutButton.hovered ? "#777777" : "#FFD700")
+                }
+                GradientStop {
+                    position: 1.0;
+                    color: logoutButton.pressed ? "#D4B800" : (logoutButton.hovered ? "#555555" : "#E6C200")
+                }
+            }
+
+            // Smooth transitions
+            Behavior on color {
+                ColorAnimation { duration: 150 }
+            }
+        }
+
+        // Custom text styling with reversed colors
+        contentItem: Text {
+            text: logoutButton.text
+            font.pixelSize: ScreenTools.largeFontPointSize
+            font.bold: true
+            color: logoutButton.hovered ? "#FFFFFF" : "#1a1a1a"
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+
+            // Smooth text color transition
+            Behavior on color {
+                ColorAnimation { duration: 150 }
+            }
+        }
+
+        onClicked: {
+            // Call AuthManager logout to return to login screen
+            if (authManager) {
+                authManager.logout()
+            }
         }
     }
 

@@ -1,3 +1,5 @@
+// customplugin.cc
+
 /****************************************************************************
  *
  * (c) 2009-2019 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
@@ -67,7 +69,9 @@ QGCFlyViewOptions* CustomOptions::flyViewOptions(void)
 // Firmware upgrade page is only shown in Advanced Mode.
 bool CustomOptions::showFirmwareUpgrade() const
 {
-    return qgcApp()->toolbox()->corePlugin()->showAdvancedUI();
+    //return qgcApp()->toolbox()->corePlugin()->showAdvancedUI();
+    // return true;
+    return AuthManager::instance().hasEngineerAccess();
 }
 
 // Normal QGC needs to work with an ESP8266 WiFi thing which is remarkably crappy. This in turns causes PX4 Pro calibration to fail
@@ -83,6 +87,9 @@ CustomPlugin::CustomPlugin(QGCApplication *app, QGCToolbox* toolbox)
 {
     _options = new CustomOptions(this, this);
     _showAdvancedUI = false;
+    m_authManager = &AuthManager::instance();
+
+
 }
 
 CustomPlugin::~CustomPlugin()
@@ -110,9 +117,9 @@ void CustomPlugin::_addSettingsEntry(const QString& title, const char* qmlFile, 
     // 'this' instance will take ownership on the QmlComponentInfo instance
     _customSettingsList.append(QVariant::fromValue(
         new QmlComponentInfo(title,
-                QUrl::fromUserInput(qmlFile),
-                iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
-                this)));
+                             QUrl::fromUserInput(qmlFile),
+                             iconFile == nullptr ? QUrl() : QUrl::fromUserInput(iconFile),
+                             this)));
 }
 
 //-----------------------------------------------------------------------------
@@ -325,15 +332,15 @@ void CustomPlugin::paletteOverride(QString colorName, QGCPalette::PaletteColorIn
         colorInfo[QGCPalette::Light][QGCPalette::ColorGroupDisabled] = QColor("#464f5a");
     }
     else if (colorName == QStringLiteral("mapWidgetBorderLight")) {
-       
+
         colorInfo[QGCPalette::Dark][QGCPalette::ColorGroupEnabled]   = QColor("#FFD100");
         colorInfo[QGCPalette::Dark][QGCPalette::ColorGroupDisabled]  = QColor("#ffffff");
         colorInfo[QGCPalette::Light][QGCPalette::ColorGroupEnabled]  = QColor("#FFD100");
         colorInfo[QGCPalette::Light][QGCPalette::ColorGroupDisabled] = QColor("#ffffff");
     }
     else if (colorName == QStringLiteral("mapWidgetBorderDark")) {
-        
-         colorInfo[QGCPalette::Dark][QGCPalette::ColorGroupEnabled]   = QColor("#FFD100");
+
+        colorInfo[QGCPalette::Dark][QGCPalette::ColorGroupEnabled]   = QColor("#FFD100");
         colorInfo[QGCPalette::Dark][QGCPalette::ColorGroupDisabled]  = QColor("#000000");
         colorInfo[QGCPalette::Light][QGCPalette::ColorGroupEnabled]  = QColor("#FFD100");
         colorInfo[QGCPalette::Light][QGCPalette::ColorGroupDisabled] = QColor("#000000");
@@ -352,43 +359,132 @@ void CustomPlugin::paletteOverride(QString colorName, QGCPalette::PaletteColorIn
     }
 }
 
+QList<int> CustomPlugin::firstRunPromptStdIds(void)
+{
+    // Return empty list to skip ALL standard first-run prompts
+    return QList<int>();
+}
+
+
 // We override this so we can get access to QQmlApplicationEngine and use it to register our qml module
 QQmlApplicationEngine* CustomPlugin::createQmlApplicationEngine(QObject* parent)
 {
-    // Step 1: Create QGC engine and load main UI, but hide it initially
+    // Create the standard QGC engine first
     QQmlApplicationEngine* qmlEngine = QGCCorePlugin::createQmlApplicationEngine(parent);
-    qmlEngine->addImportPath("qrc:/Custom/Widgets");
 
-    if (!qmlEngine->rootObjects().isEmpty()) {
-        QWindow* mainWindow = qobject_cast<QWindow*>(qmlEngine->rootObjects().first());
-        if (mainWindow) {
-            mainWindow->hide(); // Hide main QGC window initially
-        }
+    if (!qmlEngine) {
+        qDebug() << "CRITICAL: Failed to create QGC QML engine";
+        return nullptr;
     }
 
-    // Step 2: Show splash screen
-    QQuickView* splashView = new QQuickView();
-    splashView->setSource(QUrl(QStringLiteral("qrc:/custom/qml/SplashScreen.qml")));
-    splashView->setColor(Qt::black);
-    splashView->setFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-    splashView->setResizeMode(QQuickView::SizeRootObjectToView);
-    splashView->setWidth(500);  // Set splash size
-    splashView->setHeight(300);
-    splashView->show();
+    qDebug() << "QGC engine created successfully";
 
-    // Step 3: After 3 seconds, hide splash and show QGC window
-    QTimer::singleShot(3000, [splashView, qmlEngine]() {
-        splashView->close();
-        splashView->deleteLater();
+    // Register AuthManager as singleton for QML access
+    qmlRegisterSingletonType<AuthManager>("AuthManager", 1, 0, "AuthManager",
+                                          [](QQmlEngine*, QJSEngine*) -> QObject* {
+                                              return &AuthManager::instance();
+                                          });
 
-        if (!qmlEngine->rootObjects().isEmpty()) {
-            QWindow* mainWindow = qobject_cast<QWindow*>(qmlEngine->rootObjects().first());
-            if (mainWindow) {
-                mainWindow->show(); // Now show QGC window
+    // Set context properties
+    qmlEngine->rootContext()->setContextProperty("authManager", &AuthManager::instance());
+
+    qDebug() << "AuthManager registered and context properties set";
+
+    // Wait for QGC to fully load, then attach overlay
+    QTimer::singleShot(200, [qmlEngine, this]() {
+
+        const QObjectList& rootObjects = qmlEngine->rootObjects();
+        qDebug() << "Found" << rootObjects.size() << "root objects";
+
+        QQuickWindow* quickWindow = nullptr;
+
+        for (QObject* obj : rootObjects) {
+            qDebug() << "Root object type:" << obj->metaObject()->className();
+
+            // Try to cast to QQuickWindow directly
+            quickWindow = qobject_cast<QQuickWindow*>(obj);
+            if (quickWindow) {
+                qDebug() << "Found QQuickWindow directly:" << quickWindow->objectName();
+                break;
+            }
+
+            // If it's a QQuickItem, get its window
+            QQuickItem* item = qobject_cast<QQuickItem*>(obj);
+            if (item && item->window()) {
+                quickWindow = item->window();
+                qDebug() << "Found QQuickWindow through QQuickItem:" << quickWindow->objectName();
+                break;
             }
         }
+
+        if (!quickWindow) {
+            qDebug() << "CRITICAL: Could not find QQuickWindow";
+            return;
+        }
+
+        // Now we can safely access contentItem()
+        QQuickItem* contentItem = quickWindow->contentItem();
+        if (!contentItem) {
+            qDebug() << "CRITICAL: QuickWindow has no content item";
+            return;
+        }
+
+        qDebug() << "Content item size:" << contentItem->width() << "x" << contentItem->height();
+
+        // Create overlay as a separate QML component that covers the entire window
+        QQmlComponent overlayComponent(qmlEngine, QUrl("qrc:/custom/qml/LoginView.qml"));
+
+        if (overlayComponent.isError()) {
+            qDebug() << "Error creating overlay component:" << overlayComponent.errorString();
+            return;
+        }
+
+        // Create the overlay instance
+        QObject* overlayObject = overlayComponent.create(qmlEngine->rootContext());
+        if (!overlayObject) {
+            qDebug() << "CRITICAL: Failed to create overlay object";
+            return;
+        }
+
+        QQuickItem* overlay = qobject_cast<QQuickItem*>(overlayObject);
+        if (!overlay) {
+            qDebug() << "CRITICAL: Overlay object is not a QQuickItem";
+            overlayObject->deleteLater();
+            return;
+        }
+
+        // Properly parent the overlay to cover the entire content area
+        overlay->setParentItem(contentItem);
+        overlay->setZ(999999); // Ensure it's on top of everything
+
+        // Make overlay fill the entire window
+        overlay->setX(0);
+        overlay->setY(0);
+        overlay->setWidth(contentItem->width());
+        overlay->setHeight(contentItem->height());
+
+        // Bind overlay size to window size changes
+        QObject::connect(contentItem, &QQuickItem::widthChanged, overlay, [overlay, contentItem]() {
+            overlay->setWidth(contentItem->width());
+        });
+
+        QObject::connect(contentItem, &QQuickItem::heightChanged, overlay, [overlay, contentItem]() {
+            overlay->setHeight(contentItem->height());
+        });
+
+        qDebug() << "LoginView overlay attached successfully";
+        qDebug() << "Overlay size:" << overlay->width() << "x" << overlay->height();
+
+        // Start the authentication sequence
+        QTimer::singleShot(100, []() {
+            if (&AuthManager::instance()) {
+                qDebug() << "Starting authentication sequence...";
+                AuthManager::instance().startAuthSequence();
+            }
+        });
     });
 
+    qDebug() << "CustomPlugin QML engine setup completed";
     return qmlEngine;
 }
 
@@ -400,8 +496,3 @@ bool CustomPlugin::adjustSettingMetaData(const QString& settingsGroup, FactMetaD
     // No custom adjustment implemented yet
     return false;
 }
-
-
-
-
-
