@@ -28,8 +28,9 @@ Whether you're managing single drone operations or coordinating complex fleet mi
 ## 🔗 Useful Links
 
 - 🌐 [Official Website](https://qgroundcontrol.com/)
-- 📘 [User Manual](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/index.html)  
+- 📘 [User Manual](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/index.html)
+- 📘 [Indrones Custom Build Manual](https://docs.google.com/document/d/1R1hu8Bg8PNlK2pKLeXkVXQj05DSYP4RJ1ZfxUl-_USA/edit?usp=sharing)
 - 🛠️ [Developer Guide](https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/index.html)  
 - 💬 [Discussion & Support](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/Support/Support.html)  
 - 🤝 [Contributing](https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/contribute/index.html)  
-- 📜 [License Information](https://github.com/mavlink/qgroundcontrol/blob/master/.github/COPYING.md)  
+- 📜 [License Information](https://github.com/mavlink/qgroundcontrol/blob/master/.github/COPYING.md)
