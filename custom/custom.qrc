@@ -15,9 +15,11 @@
         <file alias="indrones_image_.png">res/Images/indrones_image_.png</file>
         <file alias="custom_splash.png">res/Images/custom_splash.png</file>
     </qresource>
+    
     <qresource prefix="/qmlimages">
         <file alias="PaperPlane.svg">res/Images/PaperPlane.svg</file>
     </qresource>
+    
     <qresource prefix="/Custom/Widgets">
         <file alias="Custom/Widgets/CustomArtificialHorizon.qml">res/Custom/Widgets/CustomArtificialHorizon.qml</file>
         <file alias="Custom/Widgets/CustomAttitudeWidget.qml">res/Custom/Widgets/CustomAttitudeWidget.qml</file>
@@ -29,12 +31,17 @@
         <file alias="Custom/Widgets/CustomVehicleButton.qml">res/Custom/Widgets/CustomVehicleButton.qml</file>
         <file alias="Custom/Widgets/qmldir">res/Custom/Widgets/qmldir</file>
     </qresource>
+    
+    <!-- CORRECTED: Only one entry for FlyViewCustomLayer.qml -->
     <qresource prefix="/qml">
-        <file alias="QGroundControl/FlightDisplay/FlyViewCustomLayer.qml">../src/FlightDisplay/FlyViewCustomLayer.qml</file>
+        <file alias="QGroundControl/FlightDisplay/FlyViewCustomLayer.qml">res/FlyViewCustomLayer.qml</file>
     </qresource>
+    
     <qresource prefix="/custom">
         <file alias="CustomDashboard.qml">src/CustomDashboard.qml</file>
+        <file alias="DashboardToggle.qml">res/DashboardToggle.qml</file>
     </qresource>
+    
     <qresource prefix="/custom/qml">
         <file>SplashScreen.qml</file>
         <file>LoginView.qml</file>
