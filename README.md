@@ -24,3 +24,12 @@ Whether you're managing single drone operations or coordinating complex fleet mi
 - **Custom Splash Screen** – Indrones Specific  
 - **Login System**: Role-based authentication system with secure user management  
 - **Customized Dashboard** for flight indicators  
+
+## 🔗 Useful Links
+
+- 🌐 [Official Website](https://qgroundcontrol.com/)
+- 📘 [User Manual](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/index.html)  
+- 🛠️ [Developer Guide](https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/index.html)  
+- 💬 [Discussion & Support](https://docs.qgroundcontrol.com/master/en/qgc-user-guide/Support/Support.html)  
+- 🤝 [Contributing](https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/contribute/index.html)  
+- 📜 [License Information](https://github.com/mavlink/qgroundcontrol/blob/master/.github/COPYING.md)  
