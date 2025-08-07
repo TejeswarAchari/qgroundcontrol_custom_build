@@ -1,6 +1,6 @@
 # Indrones QGroundControl - Enterprise Custom Build
 
-A highly customized, enterprise-grade Ground Control Station (GCS) built on QGroundControl 4.4.0 for professional UAV operations. Tailored specifically for **Indrones** with enhanced security, user management, and mission-critical features.
+A customized, enterprise-grade Ground Control Station (GCS) built on QGroundControl 4.4.0 for professional UAV operations. Tailored specifically for **Indrones** with enhanced security, user management, and mission-critical features.
 
 Whether you're managing single drone operations or coordinating complex fleet missions, **Indrones QGroundControl** provides a secure, intuitive, and powerful platform that meets the demanding requirements of commercial and enterprise UAV operations.
 
