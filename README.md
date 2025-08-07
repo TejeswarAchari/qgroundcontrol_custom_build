@@ -13,9 +13,8 @@ Full Flight Control: Supports all MAVLink drones.
 Vehicle Setup: Tailored configuration for ArduPilot platform only.
 Indrones Branding
 Custom Splash Screen -  Indrones Specific
-Login System : Role-based authentication system with secure 
-                                         user management
- Customized Dashboard for flight indicators 
+Login System : Role-based authentication system with secure user management
+Customized Dashboard for flight indicators 
 
       
       
