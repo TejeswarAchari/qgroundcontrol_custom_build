@@ -1,20 +1,23 @@
-# QGroundControl Ground Control Station
+Indrones QGroundControl -Enterprise  Custom Build
+A highly customized, enterprise-grade Ground Control Station (GCS) built on QGroundControl 4.4.0 for professional UAV operations. Tailored specifically for Indrones with enhanced security, user management, and mission-critical features.
+Whether you're managing single drone operations or coordinating complex fleet missions, Indrones QGroundControl provides a secure, intuitive, and powerful platform that meets the demanding requirements of commercial and enterprise UAV operations.
+🌟 Why Choose Indrones QGroundControl?
+🔒 Enterprise Security: Role-based authentication system with secure user management
+✈️ Professional Flight Operations: Enhanced dashboard and monitoring capabilities for mission-critical operations
+🎨 Custom Branding: Professional Indrones-branded interface with custom themes and colors
+🛡️ Access Control: Engineer and Operator role separation for enhanced operational security
+🚀 Streamlined Experience: Simplified interface focused on essential flight operations without unnecessary complexity
+🔐 Key Features
 
-[![Releases](https://img.shields.io/github/release/mavlink/QGroundControl.svg)](https://github.com/mavlink/QGroundControl/releases)
+Full Flight Control: Supports all MAVLink drones. 
+Vehicle Setup: Tailored configuration for ArduPilot platform only.
+Indrones Branding
+Custom Splash Screen -  Indrones Specific
+Login System : Role-based authentication system with secure 
+                                         user management
+ Customized Dashboard for flight indicators 
 
-*QGroundControl* (QGC) is an intuitive and powerful ground control station (GCS) for UAVs.
-
-The primary goal of QGC is ease of use for both first time and professional users.
-It provides full flight control and mission planning for any MAVLink enabled drone, and vehicle setup for both PX4 and ArduPilot powered UAVs. Instructions for *using QGroundControl* are provided in the [User Manual](https://docs.qgroundcontrol.com/en/) (you may not need them because the UI is very intuitive!)
-
-All the code is open-source, so you can contribute and evolve it as you want.
-The [Developer Guide](https://dev.qgroundcontrol.com/en/) explains how to [build](https://dev.qgroundcontrol.com/en/getting_started/) and extend QGC.
+      
+      
 
 
-Key Links:
-* [Website](http://qgroundcontrol.com) (qgroundcontrol.com)
-* [User Manual](https://docs.qgroundcontrol.com/en/)
-* [Developer Guide](https://dev.qgroundcontrol.com/en/)
-* [Discussion/Support](https://docs.qgroundcontrol.com/en/Support/Support.html)
-* [Contributing](https://dev.qgroundcontrol.com/en/contribute/)
-* [License](https://github.com/mavlink/qgroundcontrol/blob/master/COPYING.md)
