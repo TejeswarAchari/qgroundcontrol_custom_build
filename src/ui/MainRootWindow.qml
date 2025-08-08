@@ -147,9 +147,9 @@ ApplicationWindow {
         planView.visible = true
     }
 
-    function showDashboardView() {
-        showTool(qsTr("Dashboard"), "qrc:/custom/CustomDashboard.qml", "/qmlimages/Analyze.svg")
-    }
+    // function showDashboardView() {
+    //     showTool(qsTr("Dashboard"), "qrc:/custom/CustomDashboard.qml", "/qmlimages/Analyze.svg")
+    // }
 
 
 
@@ -304,20 +304,20 @@ ApplicationWindow {
                     spacing:        ScreenTools.defaultFontPixelWidth
 
 
-                    SubMenuButton {
-                        id: dashboardButton
-                        height: toolSelectDialog._toolButtonHeight
-                        Layout.fillWidth: true
-                        text: qsTr("Dashboard")
-                        imageResource: "/qmlimages/Analyze.svg" // You can use your own icon
-                        imageColor: qgcPal.text
-                        onClicked: {
-                            if (!mainWindow.preventViewSwitch()) {
-                                toolSelectDialog.close()
-                                mainWindow.showDashboardView()
-                            }
-                        }
-                    }
+                    // SubMenuButton {
+                    //     id: dashboardButton
+                    //     height: toolSelectDialog._toolButtonHeight
+                    //     Layout.fillWidth: true
+                    //     text: qsTr("Dashboard")
+                    //     imageResource: "/qmlimages/Analyze.svg" // You can use your own icon
+                    //     imageColor: qgcPal.text
+                    //     onClicked: {
+                    //         if (!mainWindow.preventViewSwitch()) {
+                    //             toolSelectDialog.close()
+                    //             mainWindow.showDashboardView()
+                    //         }
+                    //     }
+                    // }
 
 
                     SubMenuButton {
@@ -463,12 +463,12 @@ ApplicationWindow {
     }
 
 
-    Loader {
-        id: dashboardLoader
-        anchors.fill: parent
-        visible: false
+    // Loader {
+    //     id: dashboardLoader
+    //     anchors.fill: parent
+    //     visible: false
 
-    }
+    // }
 
     Drawer {
         id:             toolDrawer

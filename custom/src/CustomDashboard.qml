@@ -255,94 +255,92 @@ Item {
                             }
                         }
                         
-                        // Battery Status - REDUCED HEIGHT
+
                         Rectangle {
                             Layout.fillWidth: true
-                            Layout.preferredHeight: 100
+                            Layout.preferredHeight: 80
                             color: "#2b2f3a"
                             radius: 15
-                            border.color: {
-                                if (!activeVehicle || !activeVehicle.battery || !activeVehicle.battery.percentRemaining) return "#666"
-                                var percent = activeVehicle.battery.percentRemaining.value
-                                return percent > 30 ? "#90ee90" : percent > 15 ? "#ffa500" : "#ff6b6b"
-                            }
+                            border.color: "#FFD700"
                             border.width: 2
-                            
+
                             ColumnLayout {
                                 anchors.centerIn: parent
                                 spacing: 6
-                                
-                                RowLayout {
-                                    Layout.alignment: Qt.AlignHCenter
-                                    spacing: 8
-                                    
-                                    Text {
-                                        text: "🔋"
-                                        font.pixelSize: 20
-                                    }
-                                    Text {
-                                        text: "Battery"
-                                        font.pixelSize: 16
-                                        font.bold: true
-                                        color: "#FFD700"
-                                    }
-                                }
-                                
+
                                 Text {
-                                    text: activeVehicle && activeVehicle.battery && activeVehicle.battery.percentRemaining ?
-                                          activeVehicle.battery.percentRemaining.value.toFixed(0) + "%" : "No Data"
-                                    color: "white"
-                                    font.pixelSize: 14
+                                    text: "🔋 Battery Status"
+                                    font.pixelSize: 16
                                     font.bold: true
+                                    color: "#FFD700"
                                     Layout.alignment: Qt.AlignHCenter
                                 }
-                                
+
+                                // Use Repeater exactly like official implementation
                                 RowLayout {
                                     Layout.alignment: Qt.AlignHCenter
-                                    spacing: 8
-                                    
-                                    Text {
-                                        text: activeVehicle && activeVehicle.battery && activeVehicle.battery.voltage ?
-                                              activeVehicle.battery.voltage.value.toFixed(1) + "V" : "N/A"
-                                        color: "#cccccc"
-                                        font.pixelSize: 10
-                                    }
-                                    
-                                    Text {
-                                        text: activeVehicle && activeVehicle.battery && activeVehicle.battery.current ?
-                                              activeVehicle.battery.current.value.toFixed(1) + "A" : "N/A"
-                                        color: "#cccccc"
-                                        font.pixelSize: 10
-                                    }
-                                }
-                                
-                                // Battery progress bar - SMALLER
-                                Rectangle {
-                                    Layout.preferredWidth: 100  // Reduced from 120
-                                    Layout.preferredHeight: 6   // Reduced from 8
-                                    color: "#333"
-                                    radius: 3
-                                    Layout.alignment: Qt.AlignHCenter
-                                    
-                                    Rectangle {
-                                        width: activeVehicle && activeVehicle.battery && activeVehicle.battery.percentRemaining ? 
-                                               (parent.width * activeVehicle.battery.percentRemaining.value / 100) : 0
-                                        height: parent.height
-                                        color: {
-                                            if (!activeVehicle || !activeVehicle.battery || !activeVehicle.battery.percentRemaining) return "#666"
-                                            var percent = activeVehicle.battery.percentRemaining.value
-                                            return percent > 30 ? "#90ee90" : percent > 15 ? "#ffa500" : "#ff6b6b"
+                                    spacing: 10
+
+                                    Repeater {
+                                        model: _activeVehicle ? _activeVehicle.batteries : 0
+
+                                        RowLayout {
+                                            spacing: 5
+
+                                            property var battery: object
+
+                                            // Battery percentage text using official logic
+                                            Text {
+                                                text: {
+                                                    if (!isNaN(battery.percentRemaining.rawValue)) {
+                                                        if (battery.percentRemaining.rawValue > 98.9) {
+                                                            return "100%"
+                                                        } else {
+                                                            return battery.percentRemaining.valueString + battery.percentRemaining.units
+                                                        }
+                                                    } else if (!isNaN(battery.voltage.rawValue)) {
+                                                        return battery.voltage.valueString + battery.voltage.units
+                                                    } else if (battery.chargeState.rawValue !== 0) {
+                                                        return battery.chargeState.enumStringValue
+                                                    }
+                                                    return "No Data"
+                                                }
+                                                font.pixelSize: 20
+                                                font.bold: true
+                                                color: {
+                                                    switch (battery.chargeState.rawValue) {
+                                                    case 0: return "white"      // OK
+                                                    case 1: return "#ffa500"    // LOW
+                                                    case 2:
+                                                    case 3:
+                                                    case 4:
+                                                    case 5: return "#ff6b6b"    // CRITICAL/EMERGENCY/FAILED/UNHEALTHY
+                                                    default: return "white"
+                                                    }
+                                                }
+                                            }
+
+                                            // Voltage display
+                                            Text {
+                                                text: !isNaN(battery.voltage.rawValue) ?
+                                                      battery.voltage.valueString + battery.voltage.units : "N/A"
+                                                color: "#cccccc"
+                                                font.pixelSize: 10
+                                            }
                                         }
-                                        radius: parent.radius
-                                        
-                                        Behavior on width {
-                                            NumberAnimation { duration: 300 }
-                                        }
+                                    }
+
+                                    // Fallback text when no batteries
+                                    Text {
+                                        text: "No Vehicle Connected"
+                                        color: "#ff6b6b"
+                                        font.pixelSize: 14
+                                        visible: !_activeVehicle || !_activeVehicle.batteries || _activeVehicle.batteries.count === 0
                                     }
                                 }
                             }
                         }
-                        
+
                         // Connection Status - REDUCED HEIGHT
                         Rectangle {
                             Layout.fillWidth: true
